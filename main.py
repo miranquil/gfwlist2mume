@@ -42,19 +42,30 @@ def data_generate():
         }
         rules.append(item)
 
-    data_dict = {
-        'id': '596f7275-7368-696b-6100-6f776e706163',
-        'enabled': True,
-        'updated_at': time.strftime("%Y-%m-%d", time.localtime()),
-        "rules": rules,
-        'created_at': time.strftime("%Y-%m-%d", time.localtime()),
+    # data_dict = {
+    #     'id': '596f7275-7368-696b-6100-6f776e706163',
+    #     'enabled': True,
+    #     'updated_at': time.strftime("%Y-%m-%d", time.localtime()),
+    #     "rules": rules,
+    #     'created_at': time.strftime("%Y-%m-%d", time.localtime()),
+    #     'is_official': False,
+    #     'name': 'GFWList',
+    #     'description': '由GFWList生成的规则'
+    rule_set = {
         'is_official': False,
+        'description': '由GFWList生成的规则',
+        'id': '596f7275-7368-696b-6100-6f776e706163',
+        "rules": rules,
         'name': 'GFWList',
-        'description': '由GFWList生成的规则'
+    }
+    # }
+
+    rule_set_list = [rule_set]
+    result = {
+        "ruleSets": rule_set_list,
     }
 
-    result_data = [data_dict]
-    return result_data
+    return result
 
 
 if __name__ == '__main__':
