@@ -29,14 +29,25 @@ def data_generate():
         
     rule_data = re.search(r'var rules = ([\S\s]*?]);', pac_data).group(1)
     rule_data = json.loads(rule_data)
-    domains = rule_data[1][1]
+
+    direct_domains = rule_data[1][0]
+    proxy_domains = rule_data[1][1]
+
 
     rules = []
-    for domain in domains:
+    for domain in direct_domains:
+        item = {
+            "action": "DIRECT",
+            "pattern": domain,
+            "type": "DOMAIN-SUFFIX",
+            "order": "0"
+        }
+        rules.append(item)
+    for domain in proxy_domains:
         item = {
             "action": "PROXY",
             "pattern": domain,
-            "type": "URL",
+            "type": "DOMAIN-SUFFIX",
             "order": "0"
         }
         rules.append(item)
