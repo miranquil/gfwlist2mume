@@ -6,9 +6,15 @@ A script transforms gfwlist to rules which can be imported directly to Mume&amp;
 
 在线获取GFWList并转换为寒梅&Mume规则的脚本，可直接用于App内URL导入功能。
 
-## Deploy
+## INSTALL
 
 ---
+### 手动安装
+
+```python
+pip install -r requirements.txt
+python main.py
+```
 
 ### 使用Docker
 
