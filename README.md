@@ -8,8 +8,6 @@ A script transforms gfwlist to rules which can be imported directly to Mume&amp;
 
 ## Deploy
 
----
-
 ### 使用Docker
 
 #### 本地构建
