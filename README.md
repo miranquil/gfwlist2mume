@@ -8,7 +8,6 @@ A script transforms gfwlist to rules which can be imported directly to Mume&amp;
 
 ## INSTALL
 
----
 ### 手动安装
 
 ```python
