@@ -84,26 +84,34 @@ def surge_data():
     data = export_data()
     proxy_name = request.args.get("proxyName")
     proxy_type = request.args.get("proxyType")
-    output_type = request.args.get("outputType")
+    browser = request.args.get("browser")
     final_value = request.args.get("final")
+    shadowsocks = request.args.get("shadowsocks")
     direct_domains = data[0]
     proxy_domains = data[1]
 
     rules = []
 
+    if not proxy_name:
+        proxy_name = 'GFWListProxy'
+
+    if not final_value:
+        final_value = 'DIRECT'
+
     if not proxy_type:
         proxy_type = 'socks5'
 
-    rules.append(f"[Proxy]")
-    if proxy_name:
-        rules.append(f"{proxy_name} = {proxy_type}, 127.0.0.1, 1080, username, password")
+    if shadowsocks is not None:
+        proxy_type = 'custom'
 
-    else:
-        rules.append(f"GFWListProxy = {proxy_type}, 127.0.0.1, 1080, username, password")
+    rules.append(f"[Proxy]")
+    proxy_data = f"{proxy_name} = {proxy_type}, 127.0.0.1, 1080, username, password"
+    if shadowsocks is not None:
+        proxy_data += ",http://proxy.sofi.sh/SSEncrypt.module"
+    rules.append(proxy_data)
+    rules.append('')
 
     rules.append('[Rule]')
-
-
     for domain in direct_domains:
         rule_str = f"DOMAIN-SUFFIX,{domain},DIRECT"
         rules.append(rule_str)
@@ -115,12 +123,9 @@ def surge_data():
             rule_str = f"DOMAIN-SUFFIX,{domain},GFWListProxy"
         rules.append(rule_str)
 
-    if final_value:
-        rules.append(f"FINAL,{final_value}")
-    else:
-        rules.append(f"FINAL,DIRECT")
+    rules.append(f"FINAL,{final_value}")
 
-    if output_type.lower() == "file":
+    if browser is not None:
         return '</br>'.join(rules)
     return '\n'.join(rules)
 
