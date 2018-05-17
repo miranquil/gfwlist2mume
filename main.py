@@ -4,16 +4,22 @@ import urllib
 import os
 import re
 from flask import Flask
+from flask import request
 
 app = Flask(__name__)
 
 
-@app.route('/', methods=['GET'])
-def index():
-    return json.dumps(data_generate())
+@app.route('/mume')
+def mume():
+    return mume_data()
 
 
-def data_generate():
+@app.route('/surge')
+def surge():
+    return surge_data()
+
+
+def export_data():
     gfwlist_url = 'https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt'
     gfwlist_txt = urllib.request.urlopen(gfwlist_url).read().decode()
 
@@ -26,14 +32,20 @@ def data_generate():
 
     with open("pac.txt", "r", encoding='utf-8') as pacfile:
         pac_data = pacfile.read()
-        
+
     rule_data = re.search(r'var rules = ([\S\s]*?]);', pac_data).group(1)
     rule_data = json.loads(rule_data)
 
     direct_domains = rule_data[1][0]
     proxy_domains = rule_data[1][1]
 
+    return direct_domains, proxy_domains
 
+
+def mume_data():
+    data = export_data()
+    direct_domains = data[0]
+    proxy_domains = data[1]
     rules = []
     for domain in direct_domains:
         item = {
@@ -65,7 +77,52 @@ def data_generate():
         "ruleSets": rule_set_list,
     }
 
-    return result
+    return json.dumps(result)
+
+
+def surge_data():
+    data = export_data()
+    proxy_name = request.args.get("proxyName")
+    proxy_type = request.args.get("proxyType")
+    output_type = request.args.get("outputType")
+    final_value = request.args.get("final")
+    direct_domains = data[0]
+    proxy_domains = data[1]
+
+    rules = []
+
+    if not proxy_type:
+        proxy_type = 'socks5'
+
+    rules.append(f"[Proxy]")
+    if proxy_name:
+        rules.append(f"{proxy_name} = {proxy_type}, 127.0.0.1, 1080, username, password")
+
+    else:
+        rules.append(f"GFWListProxy = {proxy_type}, 127.0.0.1, 1080, username, password")
+
+    rules.append('[Rule]')
+
+
+    for domain in direct_domains:
+        rule_str = f"DOMAIN-SUFFIX,{domain},DIRECT"
+        rules.append(rule_str)
+
+    for domain in proxy_domains:
+        if proxy_name:
+            rule_str = f"DOMAIN-SUFFIX,{domain},{proxy_name}"
+        else:
+            rule_str = f"DOMAIN-SUFFIX,{domain},GFWListProxy"
+        rules.append(rule_str)
+
+    if final_value:
+        rules.append(f"FINAL,{final_value}")
+    else:
+        rules.append(f"FINAL,DIRECT")
+
+    if output_type.lower() == "file":
+        return '</br>'.join(rules)
+    return '\n'.join(rules)
 
 
 if __name__ == '__main__':
