@@ -75,4 +75,5 @@ shadowsocks：使用shadowsocks服务器，导入后会提示下载module文件�
 ## Copyrights
 
 感谢[@sofish](https://github.com/sofish)无私分享module文件。
-感谢[@JinnLynn](https://github.com/JinnLynn)的genpac工具，由于本人太懒实在不想再做一遍转换了Orz
+
+感谢[@JinnLynn](https://github.com/JinnLynn)的genpac工具，由于本人太懒实在不想再做一遍转换了Orz。
